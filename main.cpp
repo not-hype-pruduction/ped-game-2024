@@ -68,7 +68,14 @@ vector<int> parse_turn(string turn) {
 
     return result;
 }
+class Result {
+    private:
+        map<vector<int>, vector<int>> pointsOfPile;
+        vector<vector<int>> allPlayersPoints;
 
+    public:
+        Result() : pointsOfPile({}), allPlayersPoints({}) {} 
+}
 class Checker {
 private:
     /*
@@ -621,6 +628,53 @@ private:
 
         return false;
     }
+
+    static int countPlayers(int player, int board[8][8])
+    {
+        int count = 0;
+
+        for (int i = 0; i < 8; i ++)
+        {
+            
+            for (int j = 0; j < 8; j++)
+            {
+                if (player == board[i][j]) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    static Result getWeightPile(int player, int board[8][8], Result result) {
+        vector<Result> vectorResults {};
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                try {
+                    
+
+                    
+                } catch(exception e) {
+                    continue;
+                }
+            }
+        }
+
+        return max(result);
+    }
+
+    static Result getPile(int player, int board[8][8], vector<int> cord) {
+        vector<int> tmpCord;
+        Result result;
+        do {
+            result.
+        } while (cord != tmpCord) {
+
+        }
+    }
+
+    static vector<int> getNextPoint()
 
 public:
     static bool moveIsCorrect(int player, int board[8][8], vector<int> from, vector<int> to) {
