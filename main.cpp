@@ -242,7 +242,7 @@ private:
         //на пути есть противник
         bool enemy = false;
 
-        if (from[0] == from[1] || to[0] == to[1] || board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
+        if (from[0] != from[1] || to[0] != to[1] || board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
             cout << "не из той или не туда" << endl;
             return false;
         }
