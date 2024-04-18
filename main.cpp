@@ -72,9 +72,9 @@ vector<int> parse_turn(string turn) {
 
 struct Result {
     //{координаты точки: [посещяли или нет, конечная или нет, кордината один, координата два]}
-        map<vector<int>, vector<int>> pointsOfPile {};
+    map<vector<int>, vector<int> > pointsOfPile{};
     //{[координата один, координата два]}
-        vector<vector<int>> allPlayersPoints {};
+    vector<vector<int> > allPlayersPoints{};
 };
 
 // class Result {
@@ -135,7 +135,7 @@ private:
             return false;
         }
 
-        for (int i = 0; i < 8; i++ ) {
+        for (int i = 0; i < 8; i++) {
             if (i == from[1]) {
                 fl1 = true;
             }
@@ -159,7 +159,6 @@ private:
                     enemy = true;
                     break;
                 }
-                
             }
         }
 
@@ -170,6 +169,7 @@ private:
 
         return true;
     }
+
     //ПРОВЕРЯЕМ, ЕСЛИ ХОДИМ ПО ГОРИЗОНТАЛЕ
     static bool moveIsHorizontal(int player, int board[8][8], vector<int> from, vector<int> to) {
         //количество союзников на линии
@@ -192,7 +192,7 @@ private:
             return false;
         }
 
-        for (int i = 0; i < 8; i++ ) {
+        for (int i = 0; i < 8; i++) {
             if (i == from[0]) {
                 fl1 = true;
             }
@@ -214,7 +214,6 @@ private:
                     enemy = true;
                     break;
                 }
-
             }
         }
 
@@ -225,6 +224,7 @@ private:
 
         return true;
     }
+
     //ПРОВЕРЯЕМ ДИАГОНАЛЬ КОРОЧЕ ТИПО С ВЕРХУ ВНИЗ ЛИНИЮ ПОНЯЛИ ДА!
     static bool moveIsDiagonalRight(int player, int board[8][8], vector<int> from, vector<int> to) {
         //количество союзников на линии
@@ -242,12 +242,13 @@ private:
         //на пути есть противник
         bool enemy = false;
 
-        if (from[0] != from[1] || to[0] != to[1] || board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
+        if (from[0] != from[1] || to[0] != to[1] || board[to[1]][to[0]] == player || board[from[1]][from[0]] !=
+            player) {
             cout << "не из той или не туда" << endl;
             return false;
         }
 
-        for(int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             if (i == from[0] && i == from[1]) {
                 fl1 = true;
             }
@@ -265,7 +266,7 @@ private:
                 if (fl1 && fl2) {
                     break;
                 }
-                if(board[i][i] != 0 && board[i][i] != player) {
+                if (board[i][i] != 0 && board[i][i] != player) {
                     enemy = true;
                     break;
                 }
@@ -281,6 +282,7 @@ private:
 
         return true;
     }
+
     //КОРОЧЕ ПРОВЕРЯЕМЯ ВСЕ ЧТО ВЫШИ ПРАВОЙ ДИАГОНАЛИ ПО ДИАГОНАЛИ
     static bool moveIsDiagonalRightUp(int player, int board[8][8], vector<int> from, vector<int> to) {
         //количество союзников на линии
@@ -306,14 +308,14 @@ private:
             return false;
         }
 
-        for(int k = 0; k < 8; k++) {
+        for (int k = 0; k < 8; k++) {
             fl1 = false;
             fl2 = false;
             enemy = false;
             countAllies = 0;
             countFreeCells = 0;
 
-            for(int i = 0; i < 8; i++) {
+            for (int i = 0; i < 8; i++) {
                 int j = i + number;
                 if (j < 8) {
                     if (i == from[1] && j == from[0]) {
@@ -334,15 +336,14 @@ private:
                             fl = true;
                             break;
                         }
-                        if(board[i][j] != 0 && board[i][j] != player) {
+                        if (board[i][j] != 0 && board[i][j] != player) {
                             enemy = true;
                             break;
                         }
                     }
                 }
             }
-            if (fl)
-            {
+            if (fl) {
                 break;
             }
 
@@ -354,12 +355,13 @@ private:
             return false;
         }
 
-        if(fl1 && fl2) {
+        if (fl1 && fl2) {
             return true;
         }
 
         return false;
     }
+
     //ТОЖЕ САМОЕ НО ТОЛЬКО ВНИЗ СПРАВА ЕС
     static bool moveIsDiagonalRightDown(int player, int board[8][8], vector<int> from, vector<int> to) {
         //количество союзников на линии
@@ -385,14 +387,14 @@ private:
             return false;
         }
 
-        for(int k = 0; k < 8; k++) {
+        for (int k = 0; k < 8; k++) {
             fl1 = false;
             fl2 = false;
             enemy = false;
             countAllies = 0;
             countFreeCells = 0;
 
-            for(int i = 0; i < 8; i++) {
+            for (int i = 0; i < 8; i++) {
                 int j = i + number;
                 if (j < 8) {
                     if (i == from[0] && j == from[1]) {
@@ -413,15 +415,14 @@ private:
                             fl = true;
                             break;
                         }
-                        if(board[j][i] != 0 && board[j][i] != player) {
+                        if (board[j][i] != 0 && board[j][i] != player) {
                             enemy = true;
                             break;
                         }
                     }
                 }
             }
-            if (fl)
-            {
+            if (fl) {
                 break;
             }
 
@@ -434,12 +435,13 @@ private:
             return false;
         }
 
-        if(fl1 && fl2) {
+        if (fl1 && fl2) {
             return true;
         }
 
         return false;
     }
+
     //ДИАГОНАЛЬ СНИЗУ ВВЕРХ КОРОЧЕ ЛЕВО
     static bool moveIsDiagonalLeft(int player, int board[8][8], vector<int> from, vector<int> to) {
         //количество союзников на линии
@@ -462,7 +464,7 @@ private:
             return false;
         }
 
-        for(int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             int col = 7 - i;
             if (i == from[1] && col == from[0]) {
                 fl1 = true;
@@ -481,7 +483,7 @@ private:
                 if (fl1 && fl2) {
                     break;
                 }
-                if(board[i][col] != 0 && board[i][col] != player) {
+                if (board[i][col] != 0 && board[i][col] != player) {
                     enemy = true;
                     break;
                 }
@@ -524,14 +526,14 @@ private:
             return false;
         }
 
-        for(int k = 0; k < 8; k++) {
+        for (int k = 0; k < 8; k++) {
             fl1 = false;
             fl2 = false;
             enemy = false;
             countAllies = 0;
             countFreeCells = 0;
 
-            for(int i = 0; i < 8; i++) {
+            for (int i = 0; i < 8; i++) {
                 int j = 7 - i - number;
                 if (j >= 0) {
                     if (i == from[1] && j == from[0]) {
@@ -552,15 +554,14 @@ private:
                             fl = true;
                             break;
                         }
-                        if(board[i][j] != 0 && board[i][j] != player) {
+                        if (board[i][j] != 0 && board[i][j] != player) {
                             enemy = true;
                             break;
                         }
                     }
                 }
             }
-            if (fl)
-            {
+            if (fl) {
                 break;
             }
 
@@ -572,7 +573,7 @@ private:
             return false;
         }
 
-        if(fl1 && fl2) {
+        if (fl1 && fl2) {
             return true;
         }
 
@@ -603,14 +604,14 @@ private:
             return false;
         }
 
-        for(int k = 0; k < 8; k++) {
+        for (int k = 0; k < 8; k++) {
             fl1 = false;
             fl2 = false;
             enemy = false;
             countAllies = 0;
             countFreeCells = 0;
 
-            for(int i = 0; i < 8; i++) {
+            for (int i = 0; i < 8; i++) {
                 int col = 7 - i;
                 int j = i + number;
                 if (j < 8) {
@@ -632,15 +633,14 @@ private:
                             fl = true;
                             break;
                         }
-                        if(board[j][col] != 0 && board[j][col] != player) {
+                        if (board[j][col] != 0 && board[j][col] != player) {
                             enemy = true;
                             break;
                         }
                     }
                 }
             }
-            if (fl)
-            {
+            if (fl) {
                 break;
             }
 
@@ -653,22 +653,18 @@ private:
             return false;
         }
 
-        if(fl1 && fl2) {
+        if (fl1 && fl2) {
             return true;
         }
 
         return false;
     }
 
-    static int countPlayers(int player, int board[8][8])
-    {
+    static int countPlayers(int player, int board[8][8]) {
         int count = 0;
 
-        for (int i = 0; i < 8; i ++)
-        {
-            
-            for (int j = 0; j < 8; j++)
-            {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 if (player == board[i][j]) {
                     count++;
                 }
@@ -679,19 +675,19 @@ private:
     }
 
     static Result getWeightPile(int player, int board[8][8]) {
-        vector<Result> vectorResults {};
+        vector<Result> vectorResults{};
         Result res;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (!isPointInPiles(vectorResults, vector<int> {i, j}) &&
-                board[i][j] == player) {
-                    vectorResults.push_back(getPile(player, board, vector<int> {i, j}));
+                if (!isPointInPiles(vectorResults, vector<int>{i, j}) &&
+                    board[i][j] == player) {
+                    vectorResults.push_back(getPile(player, board, vector<int>{i, j}));
                 }
             }
         }
 
-        for(Result i : vectorResults){
-            if(i.pointsOfPile.size() >= res.pointsOfPile.size()){
+        for (Result i: vectorResults) {
+            if (i.pointsOfPile.size() >= res.pointsOfPile.size()) {
                 res = i;
             }
         }
@@ -703,11 +699,11 @@ private:
         vector<int> tmpCord = cord;
         vector<int> tmpCord2 = cord;
         Result res;
-        map<vector<int>, vector<int>> tempVector;
-        
+        map<vector<int>, vector<int> > tempVector;
+
         do {
             if (res.pointsOfPile.find(tmpCord2) == res.pointsOfPile.end()) {
-                tempVector[tmpCord2] = vector<int> {0, tmpCord[0], tmpCord[1]};
+                tempVector[tmpCord2] = vector<int>{0, tmpCord[0], tmpCord[1]};
             }
 
             res.pointsOfPile = tempVector;
@@ -720,125 +716,131 @@ private:
             }
 
             if (res.pointsOfPile.find(tmpCord) == res.pointsOfPile.end()) {
-                tempVector[tmpCord] = vector<int> {0, tmpCord2[0], tmpCord2[1]};
+                tempVector[tmpCord] = vector<int>{0, tmpCord2[0], tmpCord2[1]};
             }
 
             res.pointsOfPile = tempVector;
-            tmpCord2 = getNextPoint(tmpCord, res, board, player);  
+            tmpCord2 = getNextPoint(tmpCord, res, board, player);
 
             if (tmpCord2 == tmpCord) {
                 tempVector.at(tmpCord)[0] = 1;
                 tmpCord2[0] = tempVector.at(tmpCord)[1];
                 tmpCord2[1] = tempVector.at(tmpCord)[2];
-            }          
+            }
         } while (res.pointsOfPile.at(cord)[0] != 1);
-        
+
         res.pointsOfPile = tempVector;
         return res;
     }
 
-    static vector<int> getNextPoint(vector<int> cord, Result result, int board[8][8], int player)
-    {
-        vector<int> tmpCord {};
+    static vector<int> getNextPoint(vector<int> cord, Result result, int board[8][8], int player) {
+        vector<int> tmpCord{};
 
         //свехру от точки
         try {
             tmpCord = {cord[0] - 1, cord[1]};
 
             if (board[cord[0] - 1][cord[1]] == player &&
-             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-             !isOutOfBounds(tmpCord)) {
-                return vector<int> {cord[0] - 1, cord[1]};
+                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+                !isOutOfBounds(tmpCord)) {
+                return vector<int>{cord[0] - 1, cord[1]};
             }
-        } catch(exception e) {}
-        
+        } catch (exception e) {
+        }
+
         //диагональ право вверх от точки
         try {
             tmpCord = {cord[0] - 1, cord[1] + 1};
 
-            if (board[cord[0] - 1][cord[1] + 1] == player  &&
+            if (board[cord[0] - 1][cord[1] + 1] == player &&
                 result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
                 !isOutOfBounds(tmpCord)) {
-                return vector<int> {cord[0] - 1, cord[1] + 1};
+                return vector<int>{cord[0] - 1, cord[1] + 1};
             }
-        } catch(exception e) {}
+        } catch (exception e) {
+        }
 
         //справа от точки
         try {
             tmpCord = {cord[0], cord[1] + 1};
-            
+
             if (board[cord[0]][cord[1] + 1] == player &&
-             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-             !isOutOfBounds(tmpCord)) {
-                return vector<int> {cord[0], cord[1] + 1};
+                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+                !isOutOfBounds(tmpCord)) {
+                return vector<int>{cord[0], cord[1] + 1};
             }
-        } catch(exception e) {}
+        } catch (exception e) {
+        }
 
         //диагональ право низ от точки
         try {
             tmpCord = {cord[0] + 1, cord[1] + 1};
 
             if (board[cord[0] + 1][cord[1] + 1] == player &&
-             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-             !isOutOfBounds(tmpCord)) {
-                return vector<int> {cord[0] + 1, cord[1] + 1};
+                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+                !isOutOfBounds(tmpCord)) {
+                return vector<int>{cord[0] + 1, cord[1] + 1};
             }
-        } catch(exception e) {}
+        } catch (exception e) {
+        }
 
         //снизу от точки
         try {
             tmpCord = {cord[0] + 1, cord[1]};
 
             if (board[cord[0] + 1][cord[1]] == player &&
-             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-             !isOutOfBounds(tmpCord)) {
-                return vector<int> {cord[0] + 1, cord[1]};
+                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+                !isOutOfBounds(tmpCord)) {
+                return vector<int>{cord[0] + 1, cord[1]};
             }
-        } catch(exception e) {}
+        } catch (exception e) {
+        }
 
         //диагональ лево низ от точки
         try {
             tmpCord = {cord[0] + 1, cord[1] - 1};
 
             if (board[cord[0] + 1][cord[1] - 1] == player &&
-             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-             !isOutOfBounds(tmpCord)) {
-                return vector<int> {cord[0] + 1, cord[1] - 1};
+                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+                !isOutOfBounds(tmpCord)) {
+                return vector<int>{cord[0] + 1, cord[1] - 1};
             }
-        } catch(exception e) {}
+        } catch (exception e) {
+        }
 
         //слева от точки
         try {
             tmpCord = {cord[0], cord[1] - 1};
 
             if (board[cord[0]][cord[1] - 1] == player &&
-             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-             !isOutOfBounds(tmpCord)) {
-                return vector<int> {cord[0], cord[1] - 1};
+                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+                !isOutOfBounds(tmpCord)) {
+                return vector<int>{cord[0], cord[1] - 1};
             }
-        } catch(exception e) {}
+        } catch (exception e) {
+        }
 
         //диагональ лево вверх от точки
         try {
             tmpCord = {cord[0] - 1, cord[1] - 1};
 
             if (board[cord[0] - 1][cord[1] - 1] == player &&
-             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-             !isOutOfBounds(tmpCord)) {
-                return vector<int> {cord[0] - 1, cord[1] - 1};
+                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+                !isOutOfBounds(tmpCord)) {
+                return vector<int>{cord[0] - 1, cord[1] - 1};
             }
-        } catch(exception e) {}
+        } catch (exception e) {
+        }
 
-        
+
         return cord;
     }
 
     static bool isPointInPiles(vector<Result> piles, vector<int> cord) {
-        for (Result i : piles) {
-            if (i.pointsOfPile.find(cord) != i.pointsOfPile.end())
-            {
+        for (Result i: piles) {
+            if (i.pointsOfPile.find(cord) != i.pointsOfPile.end()) {
                 return true;
-            }   
+            }
         }
 
         return false;
@@ -846,24 +848,37 @@ private:
 
     static bool isOutOfBounds(vector<int> cord) {
         if ((cord[0] >= 0 && cord[0] < 8) &&
-        (cord[1] >= 0 && cord[1] < 8)) {
+            (cord[1] >= 0 && cord[1] < 8)) {
             return false;
         }
 
         return true;
     }
 
+    static Result addAllPlayerPointInResult(int player, int board[8][8], Result result) {
+        Result res = std::move(result);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == player) {
+                    res.allPlayersPoints.push_back(vector<int> {i, j});
+                }
+            }
+        }
+
+        return res;
+    }
+
 public:
     static bool moveIsCorrect(int player, int board[8][8], vector<int> from, vector<int> to) {
         vector<bool> tests{
-                moveIsHorizontal(player, board, from, to),
-                moveIsVertically(player, board, from, to),
-                moveIsDiagonalLeft(player, board, from, to),
-                moveIsDiagonalRight(player, board, from, to),
-                moveIsDiagonaLeftUp(player, board, from, to),
-                moveIsDiagonalLeftDown(player, board, from, to),
-                moveIsDiagonalRightDown(player, board, from, to),
-                moveIsDiagonalRightUp(player, board, from, to),
+            moveIsHorizontal(player, board, from, to),
+            moveIsVertically(player, board, from, to),
+            moveIsDiagonalLeft(player, board, from, to),
+            moveIsDiagonalRight(player, board, from, to),
+            moveIsDiagonaLeftUp(player, board, from, to),
+            moveIsDiagonalLeftDown(player, board, from, to),
+            moveIsDiagonalRightDown(player, board, from, to),
+            moveIsDiagonalRightUp(player, board, from, to),
         };
 
         return std::any_of(tests.begin(), tests.end(), [](bool val) { return val; });
@@ -873,7 +888,7 @@ public:
         return getWeightPile(player, board).pointsOfPile.size();
     }
 
-    static int getMaxWeight(int player, int board[8][8]){
+    static int getMaxWeight(int player, int board[8][8]) {
         return countPlayers(player, board);
     }
 
@@ -898,14 +913,14 @@ int main() {
     cout << "Enter your player: " << endl;
     cin >> player;
 
-    while (true)
-    {
+    while (true) {
         cout << "Enter your move: " << endl;
         cin >> hod;
 
         if (Checker::moveIsCorrect(player, board, parse_turn(hod.substr(0, 2)), parse_turn(hod.substr(3, 2)))) {
             make_turn(player, board, hod.substr(0, 2), hod.substr(3, 2));
-            cout << "Max pile weight of player " << player << ": " << Checker::getMaxWeightOfPile(player, board) << endl;
+            cout << "Max pile weight of player " << player << ": " << Checker::getMaxWeightOfPile(player, board) <<
+                    endl;
 
             hod = "";
             player = 0 - player;
