@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <windows.h>
+#include <exception>
 
 using namespace std;
 
@@ -68,14 +69,44 @@ vector<int> parse_turn(string turn) {
 
     return result;
 }
-class Result {
-    private:
-        map<vector<int>, vector<int>> pointsOfPile;
-        vector<vector<int>> allPlayersPoints;
 
-    public:
-        Result() : pointsOfPile({}), allPlayersPoints({}) {} 
-}
+struct Result {
+    //{координаты точки: [посещяли или нет, конечная или нет, кордината один, координата два]}
+        map<vector<int>, vector<int>> pointsOfPile {};
+    //{[координата один, координата два]}
+        vector<vector<int>> allPlayersPoints {};
+};
+
+// class Result {
+//     private:
+//     //{координаты точки: [посещяли или нет, конечная или нет, кордината один, координата два]}
+//         map<vector<int>, vector<int>> pointsOfPile;
+//     //{[координата один, координата два]}
+//         vector<vector<int>> allPlayersPoints;
+
+//     public:
+//         Result(map<vector<int>, vector<int>> POP, vector<vector<int>> AllPP) : pointsOfPile(std::move(POP)), allPlayersPoints(std::move(AllPP)) {}
+
+
+//         void setPointsOfPile(map<vector<int>, vector<int>> PoP) {
+//             pointsOfPile = std::move(PoP);
+//         }
+
+//         void setAllPlayersPoints(vector<vector<int>> temp){
+//             allPlayersPoints = std::move(temp);
+//         }
+
+//         map<vector<int>, vector<int>> getPointsOfPile()
+//         {
+//             return pointsOfPile;
+//         }
+
+//         vector<vector<int>> getAllPlayersPoints()
+//         {
+//             return allPlayersPoints;
+//         }
+// };
+
 class Checker {
 private:
     /*
@@ -617,7 +648,7 @@ private:
         }
 
         if (enemy || (countFreeCells - 1) > countAllies) {
-            cout << countFreeCells + " " + countAllies << endl;
+            cout << countFreeCells << " " << countAllies << endl;
             cout << "moveIsDiagonalLeftDown - не свободных клеток братанчик" << endl;
             return false;
         }
@@ -647,34 +678,180 @@ private:
         return count;
     }
 
-    static Result getWeightPile(int player, int board[8][8], Result result) {
+    static Result getWeightPile(int player, int board[8][8]) {
         vector<Result> vectorResults {};
+        Result res;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                try {
-                    
-
-                    
-                } catch(exception e) {
-                    continue;
+                if (!isPointInPiles(vectorResults, vector<int> {i, j}) &&
+                board[i][j] == player) {
+                    vectorResults.push_back(getPile(player, board, vector<int> {i, j}));
                 }
             }
         }
 
-        return max(result);
+        for(Result i : vectorResults){
+            if(i.pointsOfPile.size() >= res.pointsOfPile.size()){
+                res = i;
+            }
+        }
+
+        return res;
     }
 
     static Result getPile(int player, int board[8][8], vector<int> cord) {
-        vector<int> tmpCord;
-        Result result;
+        vector<int> tmpCord = cord;
+        vector<int> tmpCord2 = cord;
+        Result res;
+        map<vector<int>, vector<int>> tempVector;
+        
         do {
-            result.
-        } while (cord != tmpCord) {
+            if (res.pointsOfPile.find(tmpCord2) == res.pointsOfPile.end()) {
+                tempVector[tmpCord2] = vector<int> {0, tmpCord[0], tmpCord[1]};
+            }
 
-        }
+            res.pointsOfPile = tempVector;
+            tmpCord = getNextPoint(tmpCord2, res, board, player);
+
+            if (tmpCord2 == tmpCord) {
+                tempVector.at(tmpCord2)[0] = 1;
+                tmpCord[0] = tempVector.at(tmpCord2)[1];
+                tmpCord[1] = tempVector.at(tmpCord2)[2];
+            }
+
+            if (res.pointsOfPile.find(tmpCord) == res.pointsOfPile.end()) {
+                tempVector[tmpCord] = vector<int> {0, tmpCord2[0], tmpCord2[1]};
+            }
+
+            res.pointsOfPile = tempVector;
+            tmpCord2 = getNextPoint(tmpCord, res, board, player);  
+
+            if (tmpCord2 == tmpCord) {
+                tempVector.at(tmpCord)[0] = 1;
+                tmpCord2[0] = tempVector.at(tmpCord)[1];
+                tmpCord2[1] = tempVector.at(tmpCord)[2];
+            }          
+        } while (res.pointsOfPile.at(cord)[0] != 1);
+        
+        res.pointsOfPile = tempVector;
+        return res;
     }
 
-    static vector<int> getNextPoint()
+    static vector<int> getNextPoint(vector<int> cord, Result result, int board[8][8], int player)
+    {
+        vector<int> tmpCord {};
+
+        //свехру от точки
+        try {
+            tmpCord = {cord[0] - 1, cord[1]};
+
+            if (board[cord[0] - 1][cord[1]] == player &&
+             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+             !isOutOfBounds(tmpCord)) {
+                return vector<int> {cord[0] - 1, cord[1]};
+            }
+        } catch(exception e) {}
+        
+        //диагональ право вверх от точки
+        try {
+            tmpCord = {cord[0] - 1, cord[1] + 1};
+
+            if (board[cord[0] - 1][cord[1] + 1] == player  &&
+                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+                !isOutOfBounds(tmpCord)) {
+                return vector<int> {cord[0] - 1, cord[1] + 1};
+            }
+        } catch(exception e) {}
+
+        //справа от точки
+        try {
+            tmpCord = {cord[0], cord[1] + 1};
+            
+            if (board[cord[0]][cord[1] + 1] == player &&
+             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+             !isOutOfBounds(tmpCord)) {
+                return vector<int> {cord[0], cord[1] + 1};
+            }
+        } catch(exception e) {}
+
+        //диагональ право низ от точки
+        try {
+            tmpCord = {cord[0] + 1, cord[1] + 1};
+
+            if (board[cord[0] + 1][cord[1] + 1] == player &&
+             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+             !isOutOfBounds(tmpCord)) {
+                return vector<int> {cord[0] + 1, cord[1] + 1};
+            }
+        } catch(exception e) {}
+
+        //снизу от точки
+        try {
+            tmpCord = {cord[0] + 1, cord[1]};
+
+            if (board[cord[0] + 1][cord[1]] == player &&
+             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+             !isOutOfBounds(tmpCord)) {
+                return vector<int> {cord[0] + 1, cord[1]};
+            }
+        } catch(exception e) {}
+
+        //диагональ лево низ от точки
+        try {
+            tmpCord = {cord[0] + 1, cord[1] - 1};
+
+            if (board[cord[0] + 1][cord[1] - 1] == player &&
+             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+             !isOutOfBounds(tmpCord)) {
+                return vector<int> {cord[0] + 1, cord[1] - 1};
+            }
+        } catch(exception e) {}
+
+        //слева от точки
+        try {
+            tmpCord = {cord[0], cord[1] - 1};
+
+            if (board[cord[0]][cord[1] - 1] == player &&
+             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+             !isOutOfBounds(tmpCord)) {
+                return vector<int> {cord[0], cord[1] - 1};
+            }
+        } catch(exception e) {}
+
+        //диагональ лево вверх от точки
+        try {
+            tmpCord = {cord[0] - 1, cord[1] - 1};
+
+            if (board[cord[0] - 1][cord[1] - 1] == player &&
+             result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+             !isOutOfBounds(tmpCord)) {
+                return vector<int> {cord[0] - 1, cord[1] - 1};
+            }
+        } catch(exception e) {}
+
+        
+        return cord;
+    }
+
+    static bool isPointInPiles(vector<Result> piles, vector<int> cord) {
+        for (Result i : piles) {
+            if (i.pointsOfPile.find(cord) != i.pointsOfPile.end())
+            {
+                return true;
+            }   
+        }
+
+        return false;
+    }
+
+    static bool isOutOfBounds(vector<int> cord) {
+        if ((cord[0] >= 0 && cord[0] < 8) &&
+        (cord[1] >= 0 && cord[1] < 8)) {
+            return false;
+        }
+
+        return true;
+    }
 
 public:
     static bool moveIsCorrect(int player, int board[8][8], vector<int> from, vector<int> to) {
@@ -690,11 +867,18 @@ public:
         };
 
         return std::any_of(tests.begin(), tests.end(), [](bool val) { return val; });
+    }
 
-        // return moveIsHorizontal(player, board, std::move(from), std::move(to)) || moveIsVertically(player, board, std::move(from), std::move(to)) ||
-        //     moveIsDiagonalLeft(player, board, std::move(from), std::move(to)) || moveIsDiagonalRight(player, board, std::move(from), std::move(to)) ||
-        //         moveIsDiagonaLeftUp(player, board, std::move(from), std::move(to)) || moveIsDiagonalLeftDown(player, board, std::move(from), std::move(to)) ||
-        //             moveIsDiagonalRightDown(player, board, std::move(from), std::move(to)) || moveIsDiagonalRightUp(player, board, std::move(from), std::move(to));
+    static int getMaxWeightOfPile(int player, int board[8][8]) {
+        return getWeightPile(player, board).pointsOfPile.size();
+    }
+
+    static int getMaxWeight(int player, int board[8][8]){
+        return countPlayers(player, board);
+    }
+
+    static bool isFinal(int player, int board[8][8]) {
+        return countPlayers(player, board) == getWeightPile(player, board).pointsOfPile.size();
     }
 };
 
@@ -704,6 +888,9 @@ int main() {
     int board[8][8];
     fill_matrix(board);
     print_matrix(board);
+
+    cout << "adasdasd" << endl;
+    cout << board[6][-2] << endl;
 
     int player;
     string hod;
@@ -718,12 +905,19 @@ int main() {
 
         if (Checker::moveIsCorrect(player, board, parse_turn(hod.substr(0, 2)), parse_turn(hod.substr(3, 2)))) {
             make_turn(player, board, hod.substr(0, 2), hod.substr(3, 2));
+            cout << "Max pile weight of player " << player << ": " << Checker::getMaxWeightOfPile(player, board) << endl;
+
+            hod = "";
+            player = 0 - player;
         }
 
-        hod = "";
-        player = 0 - player;
+        if (Checker::isFinal(player, board)) {
+            cout << "it is fucking end" << endl;
+            break;
+        }
 
-        cout << player << endl;
+
+        cout << "Your turn: " << player << endl;
 
         print_matrix(board);
     }
