@@ -869,7 +869,7 @@ private:
         }
 
         for (vector<int> point : points) {
-            if (!isPointInPile(point, pile)) {
+            if (!isPointInPile(point, pile) && !etoZaciklyvanie()) {
                 tmp = getDataPoint(point, pile, board, player);
 
                 if (tmp.size() == 2) {
@@ -923,6 +923,15 @@ private:
         oss << board_alp[from[1]] << 8 - from[0] << "-" << board_alp[to[1]] << 8 - to[0];
 
         return oss.str();
+    }
+
+    static bool etoZaciklyvanie() {
+        if (historyOfMoves[historyOfMoves.size() - 1][0] == historyOfMoves[historyOfMoves.size() - 2][1] &&
+        historyOfMoves[historyOfMoves.size() - 1][1] == historyOfMoves[historyOfMoves.size() - 2][0]) {
+            return true;
+        }
+
+        return false;
     }
 
 public:
