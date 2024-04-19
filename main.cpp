@@ -3,9 +3,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
-#include <windows.h>
 #include <exception>
-#include <Windows.h>
 
 using namespace std;
 
@@ -20,6 +18,8 @@ void make_turn(int player, int board[8][8], string from, string to);
 vector<int> parse_turn(string turn);
 
 vector<char> board_alp{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'Z'};
+
+vector<vector<string>> historyOfMoves{};
 
 void fill_matrix(int matrix[8][8]) {
     for (int i = 0; i < 8; i++) {
@@ -47,27 +47,27 @@ void print_matrix(int matrix[8][8]) {
 */
 
 
-void print_matrix(int matrix[8][8]) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            if (matrix[i][j] == 1) {
-                // Red color for 1
-                SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-            } else if (matrix[i][j] == -1) {
-                // Blue color for -1
-                SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
-            } else {
-                // Reset color to default
-                SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED);
-            }
-            cout << setw(2) << matrix[i][j];
-        }
-        cout << endl;
-    }
-    // Reset color to default at the end
-    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED);
-}
+// void print_matrix(int matrix[8][8]) {
+//     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+//     for (int i = 0; i < 8; i++) {
+//         for (int j = 0; j < 8; j++) {
+//             if (matrix[i][j] == 1) {
+//                 // Red color for 1
+//                 SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+//             } else if (matrix[i][j] == -1) {
+//                 // Blue color for -1
+//                 SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+//             } else {
+//                 // Reset color to default
+//                 SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED);
+//             }
+//             cout << setw(2) << matrix[i][j];
+//         }
+//         cout << endl;
+//     }
+//     // Reset color to default at the end
+//     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED);
+// }
 
 int letterToIndex(char letter) {
     auto it = std::find(board_alp.begin(), board_alp.end(), letter);
@@ -143,12 +143,12 @@ private:
                 countAllies++;
             }
 
+            if (fl1 && fl2) {
+                continue;
+            }
+
             if (fl1 || fl2) {
                 countFreeCells++;
-
-                if (fl1 && fl2) {
-                    break;
-                }
 
                 if (board[i][to[0]] != 0 && board[i][to[0]] != player) {
                     enemy = true;
@@ -157,11 +157,15 @@ private:
             }
         }
 
-        if (enemy || (countFreeCells - 1) > countAllies) {
+        if (enemy || (countFreeCells) != countAllies) {
             return false;
         }
 
-        return true;
+        if ((countFreeCells) == countAllies) {
+            return true;
+        }
+
+        return false;
     }
 
     //ПРОВЕРЯЕМ, ЕСЛИ ХОДИМ ПО ГОРИЗОНТАЛЕ
@@ -198,11 +202,13 @@ private:
                 countAllies++;
             }
 
+            if (fl1 && fl2) {
+                continue;
+            }
+
             if (fl1 || fl2) {
                 countFreeCells++;
-                if (fl1 && fl2) {
-                    break;
-                }
+
                 if (board[to[1]][i] != 0 && board[to[1]][i] != player) {
                     enemy = true;
                     break;
@@ -210,11 +216,15 @@ private:
             }
         }
 
-        if (enemy || (countFreeCells - 1) > countAllies) {
+        if (enemy) {
             return false;
         }
 
-        return true;
+        if ((countFreeCells) == countAllies) {
+            return true;
+        }
+
+        return false;
     }
 
     //ПРОВЕРЯЕМ ДИАГОНАЛЬ КОРОЧЕ ТИПО С ВЕРХУ ВНИЗ ЛИНИЮ ПОНЯЛИ ДА!
@@ -252,11 +262,13 @@ private:
                 countAllies++;
             }
 
+            if (fl1 && fl2) {
+                continue;
+            }
+
             if (fl1 || fl2) {
                 countFreeCells++;
-                if (fl1 && fl2) {
-                    break;
-                }
+
                 if (board[i][i] != 0 && board[i][i] != player) {
                     enemy = true;
                     break;
@@ -264,11 +276,15 @@ private:
             }
         }
 
-        if (enemy || (countFreeCells - 1) > countAllies) {
+        if (enemy || (countFreeCells) != countAllies) {
             return false;
         }
 
-        return true;
+        if ((countFreeCells) == countAllies) {
+            return true;
+        }
+
+        return false;
     }
 
     //КОРОЧЕ ПРОВЕРЯЕМЯ ВСЕ ЧТО ВЫШИ ПРАВОЙ ДИАГОНАЛИ ПО ДИАГОНАЛИ
@@ -317,12 +333,14 @@ private:
                         countAllies++;
                     }
 
+                    if (fl1 && fl2) {
+                        fl = true;
+                        continue;
+                    }
+
                     if (fl1 || fl2) {
                         countFreeCells++;
-                        if (fl1 && fl2) {
-                            fl = true;
-                            break;
-                        }
+
                         if (board[i][j] != 0 && board[i][j] != player) {
                             enemy = true;
                             break;
@@ -337,11 +355,11 @@ private:
             number++;
         }
 
-        if (enemy || (countFreeCells - 1) > countAllies) {
+        if (enemy || (countFreeCells) != countAllies) {
             return false;
         }
 
-        if (fl1 && fl2) {
+        if (fl1 && fl2 && (countFreeCells) == countAllies) {
             return true;
         }
 
@@ -394,12 +412,14 @@ private:
                         countAllies++;
                     }
 
+                    if (fl1 && fl2) {
+                        fl = true;
+                        continue;
+                    }
+
                     if (fl1 || fl2) {
                         countFreeCells++;
-                        if (fl1 && fl2) {
-                            fl = true;
-                            break;
-                        }
+
                         if (board[j][i] != 0 && board[j][i] != player) {
                             enemy = true;
                             break;
@@ -414,11 +434,11 @@ private:
             number++;
         }
 
-        if (enemy || (countFreeCells - 1) > countAllies) {
+        if (enemy || (countFreeCells) != countAllies) {
             return false;
         }
 
-        if (fl1 && fl2) {
+        if (fl1 && fl2 && (countFreeCells) == countAllies) {
             return true;
         }
 
@@ -460,11 +480,13 @@ private:
                 countAllies++;
             }
 
+            if (fl1 && fl2) {
+                continue;
+            }
+
             if (fl1 || fl2) {
                 countFreeCells++;
-                if (fl1 && fl2) {
-                    break;
-                }
+
                 if (board[i][col] != 0 && board[i][col] != player) {
                     enemy = true;
                     break;
@@ -472,11 +494,11 @@ private:
             }
         }
 
-        if (enemy || (countFreeCells - 1) > countAllies) {
+        if (enemy || (countFreeCells) != countAllies) {
             return false;
         }
 
-        if (fl1 && fl2) {
+        if (fl1 && fl2 && (countFreeCells) == countAllies) {
             return true;
         }
 
@@ -528,12 +550,14 @@ private:
                         countAllies++;
                     }
 
+                    if (fl1 && fl2) {
+                        fl = true;
+                        continue;
+                    }
+
                     if (fl1 || fl2) {
                         countFreeCells++;
-                        if (fl1 && fl2) {
-                            fl = true;
-                            break;
-                        }
+
                         if (board[i][j] != 0 && board[i][j] != player) {
                             enemy = true;
                             break;
@@ -548,11 +572,11 @@ private:
             number++;
         }
 
-        if (enemy || (countFreeCells - 1) > countAllies) {
+        if (enemy || (countFreeCells) != countAllies) {
             return false;
         }
 
-        if (fl1 && fl2) {
+        if (fl1 && fl2 && (countFreeCells) == countAllies) {
             return true;
         }
 
@@ -593,11 +617,11 @@ private:
                 int col = 7 - i;
                 int j = i + number;
                 if (j < 8) {
-                    if (i == from[0] && j == from[1]) {
+                    if (col == from[0] && j == from[1]) {
                         fl1 = true;
                     }
 
-                    if (i == to[0] && j == to[1]) {
+                    if (col == to[0] && j == to[1]) {
                         fl2 = true;
                     }
 
@@ -605,12 +629,14 @@ private:
                         countAllies++;
                     }
 
+                    if (fl1 && fl2) {
+                        fl = true;
+                        continue;
+                    }
+
                     if (fl1 || fl2) {
                         countFreeCells++;
-                        if (fl1 && fl2) {
-                            fl = true;
-                            break;
-                        }
+
                         if (board[j][col] != 0 && board[j][col] != player) {
                             enemy = true;
                             break;
@@ -625,11 +651,11 @@ private:
             number++;
         }
 
-        if (enemy || (countFreeCells - 1) > countAllies) {
+        if (enemy || (countFreeCells) != countAllies) {
             return false;
         }
 
-        if (fl1 && fl2) {
+        if (fl1 && fl2 && (countFreeCells) == countAllies) {
             return true;
         }
 
@@ -859,7 +885,10 @@ private:
         vector<int> tmpCord{};
 
         for (vector<int> pointInPile : pile) {
-            vector<vector<int>> radius {{-1, 0, 1}, {-2, 0, 2}, {-3, 0, 3}, {-4, 0, 4}, {-5, 0, 5}, {-6, 0, 6}, {-7, 0, 7}, {-8, 0, 8}};
+            vector<vector<int>> radius {{-1, 0, 1}, {-2, -1, 0, 1, 2}, {-3, -2, -1, 0, 1, 2, 3}, {-4, -3, -2, -1, 0, 1, 2, 3, 4},
+                                        {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5}, {-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6},
+                                        {-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7},
+                                        {-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8}};
 
             for (const auto& rad : radius) {
                 for (const auto& i : rad) {
@@ -922,7 +951,7 @@ public:
 
     static bool isFinal(int player, int board[8][8]) {
         return countPlayers(player, board) == getWeightPile(player, board).pointsOfPile.size() ||
-                countPlayers(0 - player, board) == getWeightPile(0 - player, board).pointsOfPile.size();
+               countPlayers(0 - player, board) == getWeightPile(0 - player, board).pointsOfPile.size();
     }
 
     static string getMove(int player, int board[8][8], Result result) {
@@ -939,8 +968,15 @@ public:
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (board[i][j] == player) {
-                    res.allPlayersPoints.push_back(vector<int> {i, j});
+                if (player == 1) {
+                    if (board[j][i] == player) {
+                        res.allPlayersPoints.push_back(vector<int> {j, i});
+                    }
+                }
+                else {
+                    if (board[i][j] == player) {
+                        res.allPlayersPoints.push_back(vector<int> {i, j});
+                    }
                 }
             }
         }
@@ -950,17 +986,29 @@ public:
 };
 
 int main() {
-    SetConsoleOutputCP(CP_UTF8);
+    //SetConsoleOutputCP(CP_UTF8);
 
     int board[8][8];
     fill_matrix(board);
-    print_matrix(board);
+    //print_matrix(board);
 
     int player;
     string hod;
-
-    cout << "Enter your player: " << endl;
+    int max_hod;
+    cin >> max_hod;
+    //cout << "Enter your player: " << endl;
     cin >> player;
+    bool we;
+
+    if (player == 0) {
+        player = 1;
+        we = true;
+    }
+    else {
+        player = 1;
+        we = false;
+    }
+
 
     while (true) {
         //cout << "Enter your move: " << endl;
@@ -968,27 +1016,47 @@ int main() {
         res = Checker::addAllPlayerPointInResult(player, board, res);
         //cin >> hod;
 
-        hod = Checker::getMove(player, board, res);
 
-        if (Checker::moveIsCorrect(player, board, parse_turn(hod.substr(0, 2)), parse_turn(hod.substr(3, 2)))) {
+        if (we) {
+            hod = Checker::getMove(player, board, res);
+            if (Checker::moveIsCorrect(player, board, parse_turn(hod.substr(0, 2)), parse_turn(hod.substr(3, 2)))) {
+                make_turn(player, board, hod.substr(0, 2), hod.substr(3, 2));
+
+                //{{"A2", "B2"}, {"A2", "B2"}}
+                historyOfMoves.push_back(vector<string> {hod.substr(0, 2), hod.substr(3, 2)});
+
+                //cout << "Max pile weight of player " << player << ": " << Checker::getMaxWeightOfPile(player, board) <<
+                //     endl;
+
+                //cout << "this is perfect move for player " << player << ": " << Checker::getMove(player, board, res) << endl;
+
+            }
+
+            cout << hod << endl;
+        }
+        else {
+            hod = "";
+            cin >> hod;
             make_turn(player, board, hod.substr(0, 2), hod.substr(3, 2));
-
-            cout << "Max pile weight of player " << player << ": " << Checker::getMaxWeightOfPile(player, board) <<
-                 endl;
-
-            cout << "this is perfect move for player " << player << ": " << Checker::getMove(player, board, res) << endl;
-
-            player = 0 - player;
         }
 
-        print_matrix(board);
-
-        if (Checker::isFinal(player, board)) {
-            cout << "it is fucking end" << endl;
-            break;
+        if (player == 1) {
+            player = -1;
+        }
+        else {
+            player = 1;
         }
 
-        cout << "Your turn: " << player << endl;
+        we = !we;
+
+        //print_matrix(board);
+
+        // if (Checker::isFinal(player, board)) {
+        //     cout << "it is fucking end" << endl;
+        //     break;
+        // }
+
+        //cout << "Your turn: " << player << endl;
     }
 
     return 0;
