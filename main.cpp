@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <windows.h>
 #include <exception>
+#include <Windows.h>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ void make_turn(int player, int board[8][8], string from, string to);
 
 vector<int> parse_turn(string turn);
 
-vector<char> board_alp{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+vector<char> board_alp{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'Z'};
 
 void fill_matrix(int matrix[8][8]) {
     for (int i = 0; i < 8; i++) {
@@ -34,6 +35,7 @@ void fill_matrix(int matrix[8][8]) {
     }
 }
 
+/*
 void print_matrix(int matrix[8][8]) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -41,6 +43,30 @@ void print_matrix(int matrix[8][8]) {
         }
         cout << endl;
     }
+}
+*/
+
+
+void print_matrix(int matrix[8][8]) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (matrix[i][j] == 1) {
+                // Red color for 1
+                SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+            } else if (matrix[i][j] == -1) {
+                // Blue color for -1
+                SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+            } else {
+                // Reset color to default
+                SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED);
+            }
+            cout << setw(2) << matrix[i][j];
+        }
+        cout << endl;
+    }
+    // Reset color to default at the end
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED);
 }
 
 int letterToIndex(char letter) {
@@ -77,36 +103,6 @@ struct Result {
     vector<vector<int> > allPlayersPoints{};
 };
 
-// class Result {
-//     private:
-//     //{координаты точки: [посещяли или нет, конечная или нет, кордината один, координата два]}
-//         map<vector<int>, vector<int>> pointsOfPile;
-//     //{[координата один, координата два]}
-//         vector<vector<int>> allPlayersPoints;
-
-//     public:
-//         Result(map<vector<int>, vector<int>> POP, vector<vector<int>> AllPP) : pointsOfPile(std::move(POP)), allPlayersPoints(std::move(AllPP)) {}
-
-
-//         void setPointsOfPile(map<vector<int>, vector<int>> PoP) {
-//             pointsOfPile = std::move(PoP);
-//         }
-
-//         void setAllPlayersPoints(vector<vector<int>> temp){
-//             allPlayersPoints = std::move(temp);
-//         }
-
-//         map<vector<int>, vector<int>> getPointsOfPile()
-//         {
-//             return pointsOfPile;
-//         }
-
-//         vector<vector<int>> getAllPlayersPoints()
-//         {
-//             return allPlayersPoints;
-//         }
-// };
-
 class Checker {
 private:
     /*
@@ -131,7 +127,6 @@ private:
         bool enemy = false;
 
         if (from[0] != to[0] || board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
-            cout << "Не из той или не туда(" << endl;
             return false;
         }
 
@@ -163,7 +158,6 @@ private:
         }
 
         if (enemy || (countFreeCells - 1) > countAllies) {
-            cout << "moveIsVertically - не свободных клеток братанчик" << endl;
             return false;
         }
 
@@ -188,7 +182,6 @@ private:
         bool enemy = false;
 
         if (from[1] != to[1] || board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
-            cout << "не из той или не туда" << endl;
             return false;
         }
 
@@ -218,7 +211,6 @@ private:
         }
 
         if (enemy || (countFreeCells - 1) > countAllies) {
-            cout << "moveIsHorizontal - не свободных клеток братанчик" << endl;
             return false;
         }
 
@@ -243,8 +235,7 @@ private:
         bool enemy = false;
 
         if (from[0] != from[1] || to[0] != to[1] || board[to[1]][to[0]] == player || board[from[1]][from[0]] !=
-            player) {
-            cout << "не из той или не туда" << endl;
+                                                                                     player) {
             return false;
         }
 
@@ -274,9 +265,6 @@ private:
         }
 
         if (enemy || (countFreeCells - 1) > countAllies) {
-            cout << countAllies << " " << countFreeCells << endl;
-
-            cout << "moveIsDiagonalRight - не свободных клеток братанчик" << endl;
             return false;
         }
 
@@ -304,7 +292,6 @@ private:
         bool fl = false;
 
         if (board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
-            cout << "не из той или не туда" << endl;
             return false;
         }
 
@@ -351,7 +338,6 @@ private:
         }
 
         if (enemy || (countFreeCells - 1) > countAllies) {
-            cout << "moveIsDiagonalRightUp - не свободных клеток братанчик" << endl;
             return false;
         }
 
@@ -383,7 +369,6 @@ private:
         bool fl = false;
 
         if (board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
-            cout << "не из той или не туда" << endl;
             return false;
         }
 
@@ -426,12 +411,10 @@ private:
                 break;
             }
 
-
             number++;
         }
 
         if (enemy || (countFreeCells - 1) > countAllies) {
-            cout << "moveIsDiagonalRightDown - не свободных клеток братанчик" << endl;
             return false;
         }
 
@@ -460,7 +443,6 @@ private:
         bool enemy = false;
 
         if (board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
-            cout << "не из той или не туда" << endl;
             return false;
         }
 
@@ -491,7 +473,6 @@ private:
         }
 
         if (enemy || (countFreeCells - 1) > countAllies) {
-            cout << "moveIsDiagonalLeft - не свободных клеток братанчик" << endl;
             return false;
         }
 
@@ -522,7 +503,6 @@ private:
         bool fl = false;
 
         if (board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
-            cout << "не из той или не туда" << endl;
             return false;
         }
 
@@ -569,7 +549,6 @@ private:
         }
 
         if (enemy || (countFreeCells - 1) > countAllies) {
-            cout << "moveIsDiagonaLeftUp - не свободных клеток братанчик" << endl;
             return false;
         }
 
@@ -600,7 +579,6 @@ private:
         bool fl = false;
 
         if (board[to[1]][to[0]] == player || board[from[1]][from[0]] != player) {
-            cout << "не из той или не туда" << endl;
             return false;
         }
 
@@ -648,8 +626,6 @@ private:
         }
 
         if (enemy || (countFreeCells - 1) > countAllies) {
-            cout << countFreeCells << " " << countAllies << endl;
-            cout << "moveIsDiagonalLeftDown - не свободных клеток братанчик" << endl;
             return false;
         }
 
@@ -855,30 +831,82 @@ private:
         return true;
     }
 
-    static Result addAllPlayerPointInResult(int player, int board[8][8], Result result) {
-        Result res = std::move(result);
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (board[i][j] == player) {
-                    res.allPlayersPoints.push_back(vector<int> {i, j});
+    static vector<vector<int>> getPerfectMove(int player, int board[8][8], Result result) {
+        vector<vector<int>> points = result.allPlayersPoints;
+        vector<vector<int>> pile;
+        map<vector<int>, vector<int>> goodPoints;
+
+        vector<int> tmp;
+
+        for (const auto& key : result.pointsOfPile) {
+            pile.push_back(key.first);
+        }
+
+        for (vector<int> point : points) {
+            if (!isPointInPile(point, pile)) {
+                tmp = getDataPoint(point, pile, board, player);
+
+                if (tmp.size() == 2) {
+                    return vector<vector<int>> {point, tmp};
                 }
             }
         }
 
-        return res;
+        return vector<vector<int>> {{8, 8}, {8, 8}};
+    }
+
+    static vector<int> getDataPoint(vector<int> point, vector<vector<int>> pile, int board[8][8], int player) {
+        vector<int> tmpCord{};
+
+        for (vector<int> pointInPile : pile) {
+            vector<vector<int>> radius {{-1, 0, 1}, {-2, 0, 2}, {-3, 0, 3}, {-4, 0, 4}, {-5, 0, 5}, {-6, 0, 6}, {-7, 0, 7}, {-8, 0, 8}};
+
+            for (const auto& rad : radius) {
+                for (const auto& i : rad) {
+                    for (const auto& j : rad) {
+                        tmpCord = {pointInPile[0] + i, pointInPile[1] + j};
+
+                        if (board[tmpCord[0]][tmpCord[1]] != player &&
+                            !isOutOfBounds(tmpCord) && moveIsCorrect(player, board, vector<int> {point[1], point[0]}, vector<int> {tmpCord[1], tmpCord[0]})) {
+                            return tmpCord;
+                        }
+                    }
+                }
+            }
+        }
+
+        return vector<int> {};
+    }
+
+    static bool isPointInPile(vector<int> point, vector<vector<int>> pile) {
+        for (const auto& pointInPile : pile) {
+            if (point == pointInPile) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static string cordsToMove(vector<int> from, vector<int> to) {
+        std::ostringstream oss;
+
+        oss << board_alp[from[1]] << 8 - from[0] << "-" << board_alp[to[1]] << 8 - to[0];
+
+        return oss.str();
     }
 
 public:
     static bool moveIsCorrect(int player, int board[8][8], vector<int> from, vector<int> to) {
         vector<bool> tests{
-            moveIsHorizontal(player, board, from, to),
-            moveIsVertically(player, board, from, to),
-            moveIsDiagonalLeft(player, board, from, to),
-            moveIsDiagonalRight(player, board, from, to),
-            moveIsDiagonaLeftUp(player, board, from, to),
-            moveIsDiagonalLeftDown(player, board, from, to),
-            moveIsDiagonalRightDown(player, board, from, to),
-            moveIsDiagonalRightUp(player, board, from, to),
+                moveIsHorizontal(player, board, from, to),
+                moveIsVertically(player, board, from, to),
+                moveIsDiagonalLeft(player, board, from, to),
+                moveIsDiagonalRight(player, board, from, to),
+                moveIsDiagonaLeftUp(player, board, from, to),
+                moveIsDiagonalLeftDown(player, board, from, to),
+                moveIsDiagonalRightDown(player, board, from, to),
+                moveIsDiagonalRightUp(player, board, from, to),
         };
 
         return std::any_of(tests.begin(), tests.end(), [](bool val) { return val; });
@@ -893,7 +921,31 @@ public:
     }
 
     static bool isFinal(int player, int board[8][8]) {
-        return countPlayers(player, board) == getWeightPile(player, board).pointsOfPile.size();
+        return countPlayers(player, board) == getWeightPile(player, board).pointsOfPile.size() ||
+                countPlayers(0 - player, board) == getWeightPile(0 - player, board).pointsOfPile.size();
+    }
+
+    static string getMove(int player, int board[8][8], Result result) {
+        vector<vector<int>> cords = getPerfectMove(player, board, result);
+        return cordsToMove(cords[0], cords[1]);
+    }
+
+    static Result getResult(int player, int board[8][8]) {
+        return getWeightPile(player, board);
+    }
+
+    static Result addAllPlayerPointInResult(int player, int board[8][8], Result result) {
+        Result res = std::move(result);
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == player) {
+                    res.allPlayersPoints.push_back(vector<int> {i, j});
+                }
+            }
+        }
+
+        return res;
     }
 };
 
@@ -904,9 +956,6 @@ int main() {
     fill_matrix(board);
     print_matrix(board);
 
-    cout << "adasdasd" << endl;
-    cout << board[6][-2] << endl;
-
     int player;
     string hod;
 
@@ -914,29 +963,33 @@ int main() {
     cin >> player;
 
     while (true) {
-        cout << "Enter your move: " << endl;
-        cin >> hod;
+        //cout << "Enter your move: " << endl;
+        Result res = Checker::getResult(player, board);
+        res = Checker::addAllPlayerPointInResult(player, board, res);
+        //cin >> hod;
+
+        hod = Checker::getMove(player, board, res);
 
         if (Checker::moveIsCorrect(player, board, parse_turn(hod.substr(0, 2)), parse_turn(hod.substr(3, 2)))) {
             make_turn(player, board, hod.substr(0, 2), hod.substr(3, 2));
-            cout << "Max pile weight of player " << player << ": " << Checker::getMaxWeightOfPile(player, board) <<
-                    endl;
 
-            hod = "";
+            cout << "Max pile weight of player " << player << ": " << Checker::getMaxWeightOfPile(player, board) <<
+                 endl;
+
+            cout << "this is perfect move for player " << player << ": " << Checker::getMove(player, board, res) << endl;
+
             player = 0 - player;
         }
+
+        print_matrix(board);
 
         if (Checker::isFinal(player, board)) {
             cout << "it is fucking end" << endl;
             break;
         }
 
-
         cout << "Your turn: " << player << endl;
-
-        print_matrix(board);
     }
-
 
     return 0;
 }
