@@ -868,12 +868,14 @@ private:
             pile.push_back(key.first);
         }
 
-        for (vector<int> point : points) {
-            if (!isPointInPile(point, pile)) {
-                tmp = getDataPoint(point, pile, board, player);
+        for (int index = 0; index < 8; index++) {
+            for (const vector<int>& point : points) {
+                if (!isPointInPile(point, pile)) {
+                    tmp = getDataPoint(point, pile, board, player, index);
 
-                if (tmp.size() == 2 && !etoZaciklyvanie(vector<vector<int>> {point, tmp})) {
-                    return vector<vector<int>> {point, tmp};
+                    if (tmp.size() == 2 && !etoZaciklyvanie(vector<vector<int>> {point, tmp})) {
+                        return vector<vector<int>> {point, tmp};
+                    }
                 }
             }
         }
@@ -881,24 +883,26 @@ private:
         return vector<vector<int>> {{8, 8}, {8, 8}};
     }
 
-    static vector<int> getDataPoint(vector<int> point, vector<vector<int>> pile, int board[8][8], int player) {
+    static vector<int> getDataPoint(vector<int> point, vector<vector<int>> pile, int board[8][8], int player, int indexOfRad) {
         vector<int> tmpCord{};
 
         for (vector<int> pointInPile : pile) {
-            vector<vector<int>> radius {{-1, 0, 1}, {-2, -1, 0, 1, 2}, {-3, -2, -1, 0, 1, 2, 3}, {-4, -3, -2, -1, 0, 1, 2, 3, 4},
-                                        {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5}, {-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6},
-                                        {-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7},
-                                        {-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8}};
+            vector<vector<int>> radius {
+                {-1, 0, 1}, {-2, -1, 0, 1, 2}, {-3, -2, -1, 0, 1, 2, 3}, {-4, -3, -2, -1, 0, 1, 2, 3, 4},
+                {-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5}, {-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6},
+                {-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7},
+                {-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8}
+            };
 
-            for (const auto& rad : radius) {
-                for (const auto& i : rad) {
-                    for (const auto& j : rad) {
-                        tmpCord = {pointInPile[0] + i, pointInPile[1] + j};
+            vector<int> rad = radius[indexOfRad];
 
-                        if (board[tmpCord[0]][tmpCord[1]] != player &&
-                            !isOutOfBounds(tmpCord) && moveIsCorrect(player, board, vector<int> {point[1], point[0]}, vector<int> {tmpCord[1], tmpCord[0]})) {
-                            return tmpCord;
-                        }
+            for (const auto& i : rad) {
+                for (const auto& j : rad) {
+                    tmpCord = {pointInPile[0] + i, pointInPile[1] + j};
+
+                    if (board[tmpCord[0]][tmpCord[1]] != player &&
+                        !isOutOfBounds(tmpCord) && moveIsCorrect(player, board, vector<int> {point[1], point[0]}, vector<int> {tmpCord[1], tmpCord[0]})) {
+                        return tmpCord;
                     }
                 }
             }
