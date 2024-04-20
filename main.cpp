@@ -880,11 +880,30 @@ private:
             }
         }
 
+        for (const vector<int>& point : points) {
+            if (!isPointInPile(point, pile)) {
+                tmp = getDataPoint(point, pile, board, player, 9);
+
+                if (tmp.size() == 2 && !etoZaciklyvanie(vector<vector<int>> {point, tmp})) {
+                    return vector<vector<int>> {point, tmp};
+                }
+            }
+        }
+        
+        for (const vector<int>& point : points) {
+            if (!isPointInPile(point, pile)) {
+                tmp = lastChance(player, board, point);
+
+                if (tmp.size() == 2 && !etoZaciklyvanie(vector<vector<int>> {point, tmp})) {
+                    return vector<vector<int>> {point, tmp};
+                }
+            }
+        }
+
         return vector<vector<int>> {{8, 8}, {8, 8}};
     }
 
     static vector<int> getDataPoint(vector<int> point, vector<vector<int>> pile, int board[8][8], int player, int indexOfRad) {
-        vector<int> tmpCord{};
 
         for (vector<int> pointInPile : pile) {
             vector<vector<int>> radius {
@@ -894,20 +913,46 @@ private:
                 {-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8}
             };
 
-            vector<int> rad = radius[indexOfRad];
+            if (indexOfRad == 9){
+                for (const vector<int>& rad : radius) {
+                    return getTmpCord(player, rad, pointInPile, point, board);
+                }
+            } 
+            else {
+                return getTmpCord(player, radius[indexOfRad], pointInPile, point, board);
+            }
+        }
 
-            for (const auto& i : rad) {
-                for (const auto& j : rad) {
-                    tmpCord = {pointInPile[0] + i, pointInPile[1] + j};
+        return vector<int> {};
+    }
 
-                    if (board[tmpCord[0]][tmpCord[1]] != player &&
-                        !isOutOfBounds(tmpCord) && moveIsCorrect(player, board, vector<int> {point[1], point[0]}, vector<int> {tmpCord[1], tmpCord[0]})) {
-                        return tmpCord;
-                    }
+    static vector<int> getTmpCord(int player, vector<int> rad, vector<int> pointInPile, vector<int> point, int board[8][8]) {
+        vector<int> tmpCord{};
+
+        for (const auto& i : rad) {
+            for (const auto& j : rad) {
+                tmpCord = {pointInPile[0] + i, pointInPile[1] + j};
+
+                if (board[tmpCord[0]][tmpCord[1]] != player &&
+                    !isOutOfBounds(tmpCord) && moveIsCorrect(player, board, vector<int> {point[1], point[0]}, vector<int> {tmpCord[1], tmpCord[0]})) {
+                    return tmpCord;
                 }
             }
         }
 
+        return vector<int> {};
+    }
+
+    static vector<int> lastChance(int player, int board[8][8], vector<int> point) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                 if (board[i][j] != player &&
+                    moveIsCorrect(player, board, vector<int> {point[1], point[0]}, vector<int> {j, i})) {
+                    return vector<int> {i, j};
+                }
+            }
+        }
+        
         return vector<int> {};
     }
 
