@@ -869,10 +869,10 @@ private:
         }
 
         for (vector<int> point : points) {
-            if (!isPointInPile(point, pile) && !etoZaciklyvanie()) {
+            if (!isPointInPile(point, pile)) {
                 tmp = getDataPoint(point, pile, board, player);
 
-                if (tmp.size() == 2) {
+                if (tmp.size() == 2 && !etoZaciklyvanie(vector<vector<int>> {point, tmp})) {
                     return vector<vector<int>> {point, tmp};
                 }
             }
@@ -925,9 +925,23 @@ private:
         return oss.str();
     }
 
-    static bool etoZaciklyvanie() {
-        if (historyOfMoves[historyOfMoves.size() - 1][0] == historyOfMoves[historyOfMoves.size() - 2][1] &&
-        historyOfMoves[historyOfMoves.size() - 1][1] == historyOfMoves[historyOfMoves.size() - 2][0]) {
+    static bool etoZaciklyvanie(vector<vector<int>> move) {
+        if (historyOfMoves.size() == 0)
+            return false;
+
+        vector<int> tmpFrom = parse_turn(historyOfMoves[historyOfMoves.size() - 1][0]);
+        vector<int> tmpTo = parse_turn(historyOfMoves[historyOfMoves.size() - 1][1]);
+
+        std::reverse(tmpFrom.begin(), tmpFrom.end());
+        std::reverse(tmpTo.begin(), tmpTo.end());
+
+//        cout << "tmp: " << tmpFrom[0] << tmpFrom[1] << ", " <<
+//             tmpTo[0] << tmpTo[1] << endl;
+//
+//        cout << "tmp: " << move[0][0] << move[0][1] << ", " <<
+//            move[1][0] << move[1][1] << endl;
+
+        if (tmpFrom == move[1] && tmpTo == move[0]) {
             return true;
         }
 
