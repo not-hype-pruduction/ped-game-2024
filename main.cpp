@@ -738,102 +738,17 @@ private:
     static vector<int> getNextPoint(vector<int> cord, Result result, int board[8][8], int player) {
         vector<int> tmpCord{};
 
-        //свехру от точки
-        try {
-            tmpCord = {cord[0] - 1, cord[1]};
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                tmpCord = {cord[0] + i, cord[1] + j};
 
-            if (board[cord[0] - 1][cord[1]] == player &&
-                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-                !isOutOfBounds(tmpCord)) {
-                return vector<int>{cord[0] - 1, cord[1]};
+                if (board[tmpCord[0]][tmpCord[1]] == player &&
+                    result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
+                    !isOutOfBounds(tmpCord)) {
+                    return tmpCord;
+                }
             }
-        } catch (exception e) {
         }
-
-        //диагональ право вверх от точки
-        try {
-            tmpCord = {cord[0] - 1, cord[1] + 1};
-
-            if (board[cord[0] - 1][cord[1] + 1] == player &&
-                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-                !isOutOfBounds(tmpCord)) {
-                return vector<int>{cord[0] - 1, cord[1] + 1};
-            }
-        } catch (exception e) {
-        }
-
-        //справа от точки
-        try {
-            tmpCord = {cord[0], cord[1] + 1};
-
-            if (board[cord[0]][cord[1] + 1] == player &&
-                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-                !isOutOfBounds(tmpCord)) {
-                return vector<int>{cord[0], cord[1] + 1};
-            }
-        } catch (exception e) {
-        }
-
-        //диагональ право низ от точки
-        try {
-            tmpCord = {cord[0] + 1, cord[1] + 1};
-
-            if (board[cord[0] + 1][cord[1] + 1] == player &&
-                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-                !isOutOfBounds(tmpCord)) {
-                return vector<int>{cord[0] + 1, cord[1] + 1};
-            }
-        } catch (exception e) {
-        }
-
-        //снизу от точки
-        try {
-            tmpCord = {cord[0] + 1, cord[1]};
-
-            if (board[cord[0] + 1][cord[1]] == player &&
-                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-                !isOutOfBounds(tmpCord)) {
-                return vector<int>{cord[0] + 1, cord[1]};
-            }
-        } catch (exception e) {
-        }
-
-        //диагональ лево низ от точки
-        try {
-            tmpCord = {cord[0] + 1, cord[1] - 1};
-
-            if (board[cord[0] + 1][cord[1] - 1] == player &&
-                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-                !isOutOfBounds(tmpCord)) {
-                return vector<int>{cord[0] + 1, cord[1] - 1};
-            }
-        } catch (exception e) {
-        }
-
-        //слева от точки
-        try {
-            tmpCord = {cord[0], cord[1] - 1};
-
-            if (board[cord[0]][cord[1] - 1] == player &&
-                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-                !isOutOfBounds(tmpCord)) {
-                return vector<int>{cord[0], cord[1] - 1};
-            }
-        } catch (exception e) {
-        }
-
-        //диагональ лево вверх от точки
-        try {
-            tmpCord = {cord[0] - 1, cord[1] - 1};
-
-            if (board[cord[0] - 1][cord[1] - 1] == player &&
-                result.pointsOfPile.find(tmpCord) == result.pointsOfPile.end() &&
-                !isOutOfBounds(tmpCord)) {
-                return vector<int>{cord[0] - 1, cord[1] - 1};
-            }
-        } catch (exception e) {
-        }
-
 
         return cord;
     }
@@ -984,12 +899,6 @@ private:
         std::reverse(tmpFrom.begin(), tmpFrom.end());
         std::reverse(tmpTo.begin(), tmpTo.end());
 
-//        cout << "tmp: " << tmpFrom[0] << tmpFrom[1] << ", " <<
-//             tmpTo[0] << tmpTo[1] << endl;
-//
-//        cout << "tmp: " << move[0][0] << move[0][1] << ", " <<
-//            move[1][0] << move[1][1] << endl;
-
         if (tmpFrom == move[1] && tmpTo == move[0]) {
             return true;
         }
@@ -1058,17 +967,14 @@ public:
 };
 
 int main() {
-    //SetConsoleOutputCP(CP_UTF8);
-
     int board[8][8];
     fill_matrix(board);
-    //print_matrix(board);
 
     int player;
     string hod;
     int max_hod;
+
     cin >> max_hod;
-    //cout << "Enter your player: " << endl;
     cin >> player;
     bool we;
 
@@ -1083,11 +989,8 @@ int main() {
 
 
     while (true) {
-        //cout << "Enter your move: " << endl;
         Result res = Checker::getResult(player, board);
         res = Checker::addAllPlayerPointInResult(player, board, res);
-        //cin >> hod;
-
 
         if (we) {
             hod = Checker::getMove(player, board, res);
@@ -1096,12 +999,6 @@ int main() {
 
                 //{{"A2", "B2"}, {"A2", "B2"}}
                 historyOfMoves.push_back(vector<string> {hod.substr(0, 2), hod.substr(3, 2)});
-
-                //cout << "Max pile weight of player " << player << ": " << Checker::getMaxWeightOfPile(player, board) <<
-                //     endl;
-
-                //cout << "this is perfect move for player " << player << ": " << Checker::getMove(player, board, res) << endl;
-
             }
 
             cout << hod << endl;
@@ -1120,15 +1017,6 @@ int main() {
         }
 
         we = !we;
-
-        //print_matrix(board);
-
-        // if (Checker::isFinal(player, board)) {
-        //     cout << "it is fucking end" << endl;
-        //     break;
-        // }
-
-        //cout << "Your turn: " << player << endl;
     }
 
     return 0;
